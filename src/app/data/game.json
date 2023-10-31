@@ -1,0 +1,17 @@
+[
+    {
+      "id": 1,
+      "name": "Truth or Drink",
+      "description": "",
+      "instruction": "",
+      "status":"AVAILABLE"
+    },
+    {
+      "id": 2,
+      "name": "Guess My Name",
+      "description": "",
+      "instruction": "",
+      "status":"UNAVAILABLE"
+    }
+  ]
+  
