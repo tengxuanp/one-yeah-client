@@ -3,10 +3,12 @@
 import GameList from '@/app/components/GameList';
 import MessageBox from '@/app/components/MessageBox';
 import UserList from '@/app/components/UserList'
+import RetroButton from '@/app/components/button';
 import { useSocket } from '@/contexts/SocketContext';
 import { useUsername } from '@/contexts/UsernameContext';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
+import copy from 'clipboard-copy';
 
 export default function Lobby ({ params }: { params: { roomid: string } }) {
     const {socket} = useSocket();
@@ -16,28 +18,39 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
     const { userlist, setUserlist, setHost, host } = useUsername();
     // const [host, setHost] = useState(Boolean)
     const [selectedGame, setSelectedGame] = useState(1);
+    const [copiedMessageVisible, setCopiedMessageVisible] = useState(false);
 
-  useEffect(() => {
-    const handleReceive = (data: any) => {
+    const handleCopyClick = () => {
+      copy(roomid);
+      setCopiedMessageVisible(true);
+
+      setTimeout(() => {
+        setCopiedMessageVisible(false);
+      }, 1500);
+
+    };
+
+    useEffect(() => {
+      // Define the event handler
+      const handleReceive = (data:any) => {
         setUserlist(data);
-    };
-
-    // Emit 'usersRoomRequest' first
-    socket.emit('usersRoomRequest', roomid);
-    // Remove the event listener for 'usersRoomRequest'
-    socket.off('usersRoomRequest');
-
-    socket.on('usersRoomReceive', handleReceive);
-
-    return () => {
+      };
+      // Emit 'usersRoomRequest' when the component mounts
+      socket.emit('usersRoomRequest', roomid);
+      // Add the event listener for 'usersRoomReceive'
+      socket.on('usersRoomReceive', handleReceive);
+    
+      // Cleanup function: Remove the event listener when the component unmounts or 'socket' changes
+      return () => {
         socket.off('usersRoomReceive', handleReceive);
-    };
-}, [socket]);
+      };
+    }, [socket, roomid]); // Ensure that 'socket' and 'roomid' are stable dependencies
 
   useEffect(()=>{
-    const handleHost = (data) => {
+    const handleHost = (data:any) => {
       setHost(data.host)      
     };
+
     socket.on('checkHost', handleHost);
 
     return () => {
@@ -53,16 +66,15 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
     socket.emit('initiate_game',selectedGame);
   };
 
-  const handleGameSelect = (game) => {
+  const handleGameSelect = (game:any) => {
     setSelectedGame(game);
   };
 
   useEffect(() => {
-    const handleGameStarted = (gameid) => {
+    const handleGameStarted = (gameid:any) => {
       router.push(`/lobby/${roomid}/${gameid}`)
     };
     
-  
     socket.on("game_initiated", handleGameStarted);
   
     return () => {
@@ -70,21 +82,28 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
     };
   }, [socket]);
 
-console.log(selectedGame)
-
   return (
     <>
-    <div>Invitation code: {roomid}</div>
-    <UserList userlist={userlist} />
+    <div className='flex justify-center items-center'>
+      <p>Invitation code: </p>
+      <div className='text-xl'>{roomid}</div>
+      {copiedMessageVisible && <span className="absolute mt-16 ml-2 text-white bg-[#5fc769bd] p-2 rounded-2xl shadow-2xl">Copied!</span>}
+      <RetroButton color='green' context='copy' onClick={handleCopyClick} />      
+    </div>
+    <div className='flex justify-left self-center'>
+      <UserList userlist={userlist} />
+    </div>
+    {host?
     <div>
-      <h2>Choose a Game:</h2>
+      <h2>Pick a Game:</h2>
       <GameList onGameSelect={handleGameSelect} />
+    </div>:''}
+    <div className='fixed bottom-0'>
+      <div >
+        <MessageBox />
+      </div>
+      {host? <RetroButton color='red' context='Start game' onClick={handleStartGame} />:''}
     </div>
-    <div>
-      <MessageBox />
-    </div>
-
-    {host?<button onClick={handleStartGame}>Start game</button>:''}
     </>
   )
 }

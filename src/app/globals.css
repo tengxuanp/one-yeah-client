@@ -16,6 +16,42 @@
   }
 }
 
+@font-face {
+  font-family: 'GamepauseRegular';
+  src: url('/fonts/GamepauseRegular.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'AmericanCaptain';
+  src: url('/fonts/AmericanCaptain.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'VT323';
+  src: url('/fonts/VT323.ttf') format('truetype');
+}
+
+.font-gamePause {
+  font-family: 'GamepauseRegular', sans-serif;
+}
+
+.font-AmericanCaptain {
+  font-family: 'AmericanCaptain', sans-serif;
+}
+
+.font-VT323 {
+  font-family: 'VT323', sans-serif;
+}
+
+html {
+  font-family: 'AmericanCaptain', sans-serif; /* Apply AmericanCaptain to the entire app */
+}
+
+h2,p {
+  font-family: 'GamepauseRegular', sans-serif; /* Apply AmericanCaptain to the entire app */
+}
+
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -24,4 +60,30 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+
+input[type="radio"].radioGame{
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  /* border: 2px solid #ffffff; */
+  /* background-color: #ffffff; */
+  border-radius: 50%;
+  outline: none;
+  transition: 0.3s ease-in-out;
+  margin-right: 1em;
+}
+
+input[type="radio"].radioGame:checked{
+  /* background-color: #000000;
+  border-color: #000000; */
+
+  display: inline-block;
+  transform: rotate(45deg);
+  height: 15px;
+  width: 12px;
+  border-bottom: 7px solid #57911d;
+  border-right: 7px solid #57911d;
 }

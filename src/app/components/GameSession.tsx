@@ -3,70 +3,247 @@
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '@/contexts/SocketContext';
 import { useUsername } from '@/contexts/UsernameContext';
+import GameInstruction from './GameInstruction';
+import GameOver from './GameOver';
+import RetroButton from './button';
 
 const initialState={
   question:'',
   started:false,
+  currentPlayerTurn:false,
+  scores: {},
+  end:false,
+  winner:'',
+  qsLoading:false
 }
 
 const GameSession = ({ gameid,roomid }) => {
-  const {socket} = useSocket();
+  const { socket } = useSocket();
   const { host } = useUsername();
   const [state,setState] = useState(initialState);
 
-  // const [question, setQuestion] = useState(null);
-
-
   const startQuestion = () =>{
-    socket.emit('start_game_session',{roomid,gameid})
+    // io.to(roomid).emit('start_game_session',{roomid,gameid})
+    socket.emit('request_start_game_session', ({ roomid, gameid }));
     // socket.off('start_game_session',setState(prevState =>({...prevState,startBtn:false})))
+  console.log('client1')
   }
 
   useEffect(() => {
-    socket.on('game_started', () => {
+    const handleStartGameSession = ({ roomid, gameid }) => {
+      console.log('client3');
+      socket.off('start_game_session', handleStartGameSession);
+      socket.emit('game_session', { roomid, gameid });
+    };
+  
+    socket.on('start_game_session', handleStartGameSession);
+  
+    return () => {
+      socket.off('start_game_session', handleStartGameSession);
+    };
+  }, [socket]);
+
+
+  useEffect(() => {
+    const handleGameStarted = () => {
       setState(prevState =>({...prevState,started:true}))
+
+    };
+  
+    socket.on('game_started', handleGameStarted);
+  
+    return () => {
+      socket.off('game_started', handleGameStarted);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    const handleCurrentPlayerTurn = (isCurrentPlayer) => {
+      setState(prevState =>({...prevState,currentPlayerTurn:isCurrentPlayer}))
+    }
+
+    socket.on('current_player_turn',handleCurrentPlayerTurn);
+    
+    return () => {
+      socket.off('current_player_turn',handleCurrentPlayerTurn);
+    };
+
+  }, [socket]);
+
+  useEffect(() => {
+    const handleCurrentQuestion = (data) => {
+      setState(prevState => ({
+        ...prevState,
+        question: data.question,
+        qsLoading: false,
+      }));
+    }
+
+    setState((prevState) => ({ ...prevState, qsLoading: true }));
+    
+    socket.on('current_question', handleCurrentQuestion);
+  
+    return () => {
+      socket.off('current_question', handleCurrentQuestion);
+    };
+  }, [socket]);
+
+  const handleAnswerYes = () =>{
+    const socketid = socket.id
+    const answer = 1
+    socket.emit('handleAnswer',{socketid,answer,roomid})
+  }
+  
+  const handleAnswerNo = () =>{
+    const socketid = socket.id
+    const answer = 0
+    socket.emit('handleAnswer',{socketid,answer,roomid})
+    
+  }
+
+  const restartGame = () => {
+    socket.emit('clear_scores', { roomid });
+    // setState(prevState =>({...prevState,end:false,winner: '',scores:{}}))
+  };
+
+  const disconnectGameAll = () => {
+    socket.emit('disconnect_all_users');
+  }
+
+  const disconnectGameSelf = () => {
+    socket.emit('disconnect_user');
+  }
+
+  useEffect(() => {
+    socket.on('updated_scores', (scores) => {
+      setState(prevState => ({
+        ...prevState,
+        scores: {
+          ...prevState.scores,
+          ...scores,
+        },
+      }));
     });
   }, [socket]);
 
-
-  useEffect(() => {
-    socket.on('current_question',(data)=>{
-      setState(prevState =>({...prevState,question:data.question}))
+  useEffect(()=>{
+    socket.on('game_over',({winner}) => {
+      setState(prevState =>({...prevState,end:true,winner:winner}))
     })
+    handleAnswerNo()
+
+  },[socket])
+
+  useEffect(()=>{
+    socket.on('game_restarted', () => {
+      // Reset the local state for other clients
+      setState((prevState) => ({
+        ...prevState,
+        end: false,
+        winner: '',
+        scores: {},
+      }));
+      
+    });
   }, [socket]);
 
-  const handleReloadYes = () =>{
-    socket.emit('start_game_session',{roomid,gameid})
-  }
+  useEffect(() => {
+    const handleDisconnectAllUsers = () => {
+      // Redirect to the homepage or perform any other actions
+      window.location.href = '/getting-started'; // Update the URL based on your routing
+    };
   
-  const handleReloadNo = () =>{
-    socket.emit('start_game_session',{roomid,gameid})
-  }
+    socket.on('disconnect_all_users', handleDisconnectAllUsers);
+  
+    return () => {
+      socket.off('disconnect_all_users', handleDisconnectAllUsers);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    const handleDisconnectUser = () => {
+      window.location.href = '/';
+    };
+  
+    socket.on('disconnect_user', handleDisconnectUser);
+  
+    return () => {
+      socket.off('disconnect_user', handleDisconnectUser);
+    };
+  }, [socket]);
 
   return (
     <div>
-      <h1>{state.question}</h1>
 
-    <div>
-    <p>Instruction</p>
-    {/* {host&&state.started==false?<button id='startBtn' onClick={startQuestion}>Start</button>
-    :host==false&&state.started==false?<button id='startBtn' disabled>Get ready and wait for host to start</button>:''} */}
-    
-    {!state.started && (
-      <button
-        id='startBtn'
-        onClick={startQuestion}
-        disabled={!host}
-      >
-        {host ? 'Start' : 'Get ready and wait for host to start'}
-      </button>
-    )}
+      {!state.started && (
+        <div>
+          <div className='flex justify-center self-center mb-2'>
+            <GameInstruction gameid={gameid} />
+          </div>
+          <div className='flex justify-center self-center'>
+          {host ?
+          
+          <RetroButton
+            color='red'
+            context='Start'
+            onClick={startQuestion}
+            />
+            :<p>Get ready and wait for host to start</p>
+          }
+          </div>
+        </div>
+        )}
 
+    {state.started && (      
+      <div className='flex justify-center items-center bg-[#3d6531] h-40 px-4
+                      border-2 before:border-[#000] drop-shadow-xl'>
+          <h1 className='font-bold text-white'>{state.question}</h1>
+      </div>)}
+
+
+
+    {
+      state.started && state.currentPlayerTurn ? (
+        <div className='flex justify-center self-center'>  
+          <button
+            id='yes' 
+            className={`text-[black] m-4 p-2 self-start inline border-black border-t-2 border-l-2 border-r-4 border-b-4
+            hover:text-black hover:bg-[#57ba72] hover:border-r-2 hover:border-b-2 duration-300 
+            ${state.qsLoading == true ? 'bg-gray-400' : 'bg-[#6de38c] active:bg-[#3d824f]'}`} 
+            disabled={state.qsLoading == true}
+            onClick={handleAnswerYes}>
+              {state.qsLoading == true ? 'Please wait...' : 'Yes & Answer'}
+          </button>
+          <br />
+          <button 
+            id='no' 
+            className={`'text-[black] m-4 p-2 self-start inline border-black border-t-2 border-l-2 border-r-4 border-b-4
+            hover:text-black hover:bg-[#b36868] hover:border-r-2 hover:border-b-2 duration-300
+            ${state.qsLoading == true ? 'bg-gray-400' : 'bg-[#e38181] active:bg-[#874e4e]'}`}
+            disabled={state.qsLoading == true}
+            onClick={handleAnswerNo}>
+              {state.qsLoading == true ? 'Please wait...' : 'No / Pass'}
+          </button>
+        </div>
+      ) : state.started && !state.currentPlayerTurn ? (
+        <div>
+          <p>Wait for other player to answer</p>
+        </div>
+      ) : null
+    }
+    <div className='fixed bottom-0 m-4 ml-0 p-2 border-2 border-b-4 border-r-2 border-black bg-[#fff7bd]'>
+      <h2 className='underline decoration-double'>Player Scores</h2>
+      <ul>
+        {Object.entries(state.scores).map(([player, score]) => (  
+          <li key={player}>
+            {player}: {score}
+          </li>
+        ))}
+      </ul>
     </div>
-      <div>  
-        <button id='yes' className='bg-green' onClick={handleReloadYes}>Yes</button><br />
-        <button id='no' className='bg-red' onClick={handleReloadNo}>No</button>
-      </div>
+
+    {state.end && <GameOver winner={state.winner} onRestart={restartGame} host={host} onDisconnectAll={disconnectGameAll} onDisconnectSelf={disconnectGameSelf} />}
+
     </div>
   );
 };

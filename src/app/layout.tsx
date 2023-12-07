@@ -24,7 +24,10 @@ export default function RootLayout({
     <UsernameProvider>
     <LogProvider>
       <html lang="en">
-        <body className={inter.className}>{children}</body>
+      <body
+        className={`${inter.className} min-h-screen bg-cover p-2`}
+        style={{ backgroundImage: 'url("/assets/bg1.gif")' }}
+      >{children}</body>
       </html>
     </LogProvider>
     </UsernameProvider>

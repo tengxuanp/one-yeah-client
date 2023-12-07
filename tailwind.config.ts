@@ -13,6 +13,21 @@ const config: Config = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
+      fontFamily: {
+        custom: ['VT323','GamepauseRegular','AmericanCaptain','sans-serif'],
+      },
+      // COLOR PALETTE
+      colors:{
+        'red-retro': '#881400',
+        'red-retro-hover':'#A81000',
+        'red-retro-active':'#420b01',
+        'green-retro': '#005800',
+        'green-retro-hover': '#006800',
+        'green-retro-active': '#012601',
+        'grey-retro': '#7C7C7C',
+        'grey-retro-hover': '#BCBCBC',
+        'grey-retro-active': '#454545',
+      },
     },
   },
   plugins: [],

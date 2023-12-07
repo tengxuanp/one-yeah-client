@@ -3,14 +3,22 @@
       "id": 1,
       "name": "Truth or Drink",
       "description": "",
-      "instruction": "",
+      "instruction": {
+        "step_1": "It's your turn when the system selects you.",
+        "step_2": "Choosing 'Yes & answer' earns 1 point, choosing 'No/Pass' earns 0 points.",
+        "step_3": "The first player to reach 5 points wins."
+      },
       "status":"AVAILABLE"
     },
     {
       "id": 2,
       "name": "Guess My Name",
       "description": "",
-      "instruction": "",
+      "instruction": {
+        "step_1": "",
+        "step_2": "",
+        "step_3": ""
+      },
       "status":"UNAVAILABLE"
     }
   ]
