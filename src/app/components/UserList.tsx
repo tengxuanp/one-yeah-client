@@ -1,6 +1,11 @@
 'use client'
 
-const UserList = ({userlist}) => {
+import React from 'react';
+interface UserListProps {
+  userlist: string[];
+}
+
+const UserList: React.FC<UserListProps> = ({userlist}) => {
 
   return (
     <div className="max-w-lg m-2 p-2 border-black border-2 border-b-4 border-r-4 bg-[#f0f0f0c9]">

@@ -1,16 +1,25 @@
 'use client'
 
-import React, { createContext, useContext } from 'react';
-import io from 'socket.io-client';
-
-// interface SocketContextProps {
-//   socket: string;
-// }
+import React, { ReactNode, createContext, useContext } from 'react';
+import io,{ Socket } from 'socket.io-client';
+interface SocketContextProps {
+  socket: Socket;
+}
 
 const SocketContext = createContext<SocketContextProps | undefined>(undefined);
 
-export const SocketProvider: React.FC = ({ children }) => {
-  const socket = io.connect('http://localhost:3001');
+interface SocketProviderProps {
+  children: ReactNode;
+}
+
+const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+
+if (!serverUrl) {
+  throw new Error('SERVER_URL is not defined in the environment variables.');
+}
+
+export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
+  const socket = io(serverUrl) as Socket;
 
   return (
     <SocketContext.Provider value={{ socket }}>

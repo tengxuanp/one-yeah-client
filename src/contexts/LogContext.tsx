@@ -1,22 +1,26 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useSocket } from './SocketContext';
 
 interface LogContextType {
-  logMessages: string;
+  logMessages: string[];
 }
 
 const LogContext = createContext<LogContextType | undefined>(undefined);
 
-export const LogProvider = ({ children }) => {
-  const [logMessages, setLogMessages] = useState([]);
+interface LogProviderProps {
+  children: ReactNode;
+}
+
+export const LogProvider = ({ children }: LogProviderProps) => {
+  const [logMessages, setLogMessages] = useState<string[]>([]);
 
   const {socket} = useSocket();
 
   useEffect(() => {
-    socket.on('log_message', (data) => {
-      setLogMessages(prevMessages => [...prevMessages, data.message]);
+    socket.on('log_message', (data: { message: string }) => {
+      setLogMessages((prevMessages: string[]) => [...prevMessages, data.message]);
     });
 
     return () => {

@@ -3,17 +3,25 @@
 import React from 'react';
 import RetroButton from './button';
 
-const GameOver = ({winner,onRestart,host,onDisconnectAll,onDisconnectSelf}) => {
+interface GameOverProps {
+    winner: string;
+    onRestart: () => void;
+    host: boolean;
+    onDisconnectAll: () => void;
+    onDisconnectSelf: () => void;
+  }
+
+const GameOver: React.FC<GameOverProps> = ({winner,onRestart,host,onDisconnectAll,onDisconnectSelf}) => {
 
     const handleRestart = () => {
         onRestart(); // Call the onRestart function passed as a prop
     };
 
-    const handleDisconnect = (host) => {
-        if(host == true){
-            onDisconnectAll()
-        }else{
-            onDisconnectSelf()
+    const handleDisconnect = (isHost: boolean) => {
+        if (isHost) {
+            onDisconnectAll();
+        } else {
+            onDisconnectSelf();
         }
     }
 

@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import gamesData from '../data/game.json'
 
-const GameList = ({onGameSelect}) => {
+const GameList = ({ onGameSelect }: { onGameSelect: any }) => {
   const [games] = useState(gamesData);
 
-  const handleGameSelect = (selectedGame) => {
+  const handleGameSelect = (selectedGame: any) => {
     onGameSelect(selectedGame);
   };
 

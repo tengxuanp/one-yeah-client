@@ -1,7 +1,5 @@
 'use client'
-// Import necessary libraries and styles
-import Image from 'next/image';
-import Link from 'next/link';
+
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useUsername } from '../contexts/UsernameContext';

@@ -6,6 +6,20 @@ import { useUsername } from '@/contexts/UsernameContext';
 import GameInstruction from './GameInstruction';
 import GameOver from './GameOver';
 import RetroButton from './button';
+interface GameSessionProps {
+  gameid: string;
+  roomid: string;
+}
+
+interface GameState {
+  question: string;
+  started: boolean;
+  currentPlayerTurn: boolean;
+  scores: Record<string, number>; // Assuming scores is an object with string keys and number values
+  end: boolean;
+  winner: string;
+  qsLoading: boolean;
+}
 
 const initialState={
   question:'',
@@ -17,21 +31,17 @@ const initialState={
   qsLoading:false
 }
 
-const GameSession = ({ gameid,roomid }) => {
+const GameSession: React.FC<GameSessionProps>  = ({ gameid,roomid }) => {
   const { socket } = useSocket();
   const { host } = useUsername();
-  const [state,setState] = useState(initialState);
+  const [state,setState] = useState<GameState>(initialState);
 
   const startQuestion = () =>{
-    // io.to(roomid).emit('start_game_session',{roomid,gameid})
     socket.emit('request_start_game_session', ({ roomid, gameid }));
-    // socket.off('start_game_session',setState(prevState =>({...prevState,startBtn:false})))
-  console.log('client1')
   }
 
   useEffect(() => {
-    const handleStartGameSession = ({ roomid, gameid }) => {
-      console.log('client3');
+    const handleStartGameSession = ({ roomid, gameid }: { roomid: string; gameid: string }) => {
       socket.off('start_game_session', handleStartGameSession);
       socket.emit('game_session', { roomid, gameid });
     };
@@ -58,7 +68,7 @@ const GameSession = ({ gameid,roomid }) => {
   }, [socket]);
 
   useEffect(() => {
-    const handleCurrentPlayerTurn = (isCurrentPlayer) => {
+    const handleCurrentPlayerTurn = (isCurrentPlayer: boolean) => {
       setState(prevState =>({...prevState,currentPlayerTurn:isCurrentPlayer}))
     }
 
@@ -71,7 +81,7 @@ const GameSession = ({ gameid,roomid }) => {
   }, [socket]);
 
   useEffect(() => {
-    const handleCurrentQuestion = (data) => {
+    const handleCurrentQuestion = (data:{ question: string }) => {
       setState(prevState => ({
         ...prevState,
         question: data.question,
@@ -115,7 +125,7 @@ const GameSession = ({ gameid,roomid }) => {
   }
 
   useEffect(() => {
-    socket.on('updated_scores', (scores) => {
+    socket.on('updated_scores', (scores: { [player: string]: number }) => {
       setState(prevState => ({
         ...prevState,
         scores: {
@@ -127,7 +137,7 @@ const GameSession = ({ gameid,roomid }) => {
   }, [socket]);
 
   useEffect(()=>{
-    socket.on('game_over',({winner}) => {
+    socket.on('game_over',({ winner }: { winner: string }) => {
       setState(prevState =>({...prevState,end:true,winner:winner}))
     })
     handleAnswerNo()
@@ -150,7 +160,7 @@ const GameSession = ({ gameid,roomid }) => {
   useEffect(() => {
     const handleDisconnectAllUsers = () => {
       // Redirect to the homepage or perform any other actions
-      window.location.href = '/getting-started'; // Update the URL based on your routing
+      window.location.href = '/'; // Update the URL based on your routing
     };
   
     socket.on('disconnect_all_users', handleDisconnectAllUsers);

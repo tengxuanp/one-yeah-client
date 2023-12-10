@@ -8,7 +8,7 @@ const MAX_MESSAGES = 2;
 const MessageBox = () => {
 
     const { logMessages } = useLog();
-    const messageContainerRef = useRef(null);
+    const messageContainerRef = useRef<HTMLUListElement | null>(null);
     const displayMessages = logMessages.slice(-MAX_MESSAGES);
 
     useEffect(() => {
@@ -20,7 +20,7 @@ const MessageBox = () => {
 
   return (
     <div className=''>
-\      <form className='m-2 p-2 '>
+     <form className='m-2 p-2 '>
       <ul ref={messageContainerRef} className='max-h-48 overflow-y-auto'>
         {displayMessages.map((message, index) => (
           <li className='m-2 p-2 bg-[#f5f5f5f8] rounded-2xl text-sm' key={index}>

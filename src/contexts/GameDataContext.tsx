@@ -6,7 +6,11 @@ export type Game = {
   id: number;
   name: string;
   description: string;
-  instruction: string;
+  instruction: {
+    step_1: string;
+    step_2: string;
+    step_3: string;
+  };
   status: "AVAILABLE" | "UNAVAILABLE";
 };
 
@@ -25,7 +29,7 @@ export const useGameData = (): Game[] => {
 };
 
 const GameDataProvider: React.FC<GameDataContextProps> = ({ children }) => (
-  <GameDataContext.Provider value={gamesData}>
+  <GameDataContext.Provider value={gamesData as Game[]}>
     {children}
   </GameDataContext.Provider>
 );

@@ -16,7 +16,6 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
     const {roomid} = params
 
     const { userlist, setUserlist, setHost, host } = useUsername();
-    // const [host, setHost] = useState(Boolean)
     const [selectedGame, setSelectedGame] = useState(1);
     const [copiedMessageVisible, setCopiedMessageVisible] = useState(false);
 

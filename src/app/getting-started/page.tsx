@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import { useUsername } from '../../contexts/UsernameContext';
-import { io } from 'socket.io-client';
 import { useRouter } from 'next/navigation';
 import { useSocket } from '@/contexts/SocketContext';
 import RetroButton from '../components/button';
