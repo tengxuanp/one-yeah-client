@@ -19,7 +19,7 @@ if (!serverUrl) {
 }
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
-  const socket = io(`'${serverUrl}'`) as Socket;
+  const socket = io(`${serverUrl}`) as Socket;
 
   return (
     <SocketContext.Provider value={{ socket }}>
