@@ -35,9 +35,11 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
       const handleReceive = (data:any) => {
         console.log('Received userlist:', data);
         setUserlist(data);
+
+        // Emit 'usersRoomRequest' when the component mounts
+        socket.emit('usersRoomRequest', roomid);
       };
-      // Emit 'usersRoomRequest' when the component mounts
-      socket.emit('usersRoomRequest', roomid);
+
       // Add the event listener for 'usersRoomReceive'
       socket.on('usersRoomReceive', handleReceive);
     
