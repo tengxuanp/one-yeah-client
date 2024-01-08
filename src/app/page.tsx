@@ -30,9 +30,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    socket.on("receive_userdata", (data) => {
-      localStorage.setItem('username', data.username);
-      localStorage.setItem('userid', data.uniqueIdentifier);
+    socket.on("receive_username", () => {
       router.push(`/getting-started`);
     });
   }, [socket]);

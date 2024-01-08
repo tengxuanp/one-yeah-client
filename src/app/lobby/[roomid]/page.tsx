@@ -29,7 +29,6 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
 
     };
 
-
     useEffect(() => {
       // Define the event handler
       const handleReceive = (data:any) => {
@@ -49,33 +48,29 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
       };
     }, [socket, roomid]); // Ensure that 'socket' and 'roomid' are stable dependencies
 
+  useEffect(()=>{
+    const handleHost = (data:any) => {
+      setHost(data.host)      
+    };
 
-  // useEffect(()=>{
-  //   const handleHost = (data:any) => {
-  //     setHost(data.host)      
-  //   };
+    socket.on('checkHost', handleHost);
 
-  //   socket.on('checkHost', handleHost);
+    return () => {
+      socket.off('checkHost', handleHost);
+  };
+  },[socket])
 
-  //   return () => {
-  //     socket.off('checkHost', handleHost);
-  // };
-  // },[socket])
+  useEffect(()=>{
 
-  // useEffect(()=>{
-
-  // },[host])
-
+  },[host])
 
   const handleStartGame = () => {
-    const roomID = localStorage.getItem('roomID');
-    socket.emit('initiate_game',{selectedGame,roomID});
+    socket.emit('initiate_game',selectedGame);
   };
 
   const handleGameSelect = (game:any) => {
     setSelectedGame(game);
   };
-
 
   useEffect(() => {
     const handleGameStarted = (gameid:any) => {
@@ -100,18 +95,16 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
     <div className='flex justify-left self-center'>
       <UserList userlist={userlist} />
     </div>
-    {localStorage.getItem('isHost') === 'true' ? (
-      <div>
-        <h2>Pick a Game:</h2>
-        <GameList onGameSelect={handleGameSelect} />
-      </div>
-    ) : ''}
-
+    {host?
+    <div>
+      <h2>Pick a Game:</h2>
+      <GameList onGameSelect={handleGameSelect} />
+    </div>:''}
     <div className='fixed bottom-0'>
       <div >
         <MessageBox />
       </div>
-      {localStorage.getItem('isHost') === 'true' ? <RetroButton color='red' context='Start game' onClick={handleStartGame} />:''}
+      {host? <RetroButton color='red' context='Start game' onClick={handleStartGame} />:''}
     </div>
     </>
   )
