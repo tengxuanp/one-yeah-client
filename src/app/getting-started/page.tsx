@@ -14,8 +14,12 @@ export default function GettingStarted() {
   const { username } = useUsername();
   const [roomIDInput, setRoomIDInput] = useState<string | null>(null);
   
-    const handleRoom = (roomId: string | null) => {
-      socket.emit('joinRoom', roomId);
+    const handleRoom = (roomID: string | null) => {
+      const userid = localStorage.getItem('userid');
+      const username = localStorage.getItem('username');
+
+      console.log(roomID)
+      socket.emit('joinRoom', {roomID,userid,username});
     }
 
     // Join an existing room
@@ -32,7 +36,10 @@ export default function GettingStarted() {
 
     useEffect(() => {
       const handleRoomID = (data: any) => {
-        router.push(`/lobby/${data}`);
+        localStorage.setItem('roomID',data.roomID);
+        localStorage.setItem('isHost',data.isHost);
+
+        router.push(`/lobby/${data.roomID}`);
       };
   
       socket.on('roomID', handleRoomID);

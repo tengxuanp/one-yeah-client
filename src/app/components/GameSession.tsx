@@ -99,15 +99,15 @@ const GameSession: React.FC<GameSessionProps>  = ({ gameid,roomid }) => {
   }, [socket]);
 
   const handleAnswerYes = () =>{
-    const socketid = socket.id
+    const userid = localStorage.getItem('userid')
     const answer = 1
-    socket.emit('handleAnswer',{socketid,answer,roomid})
+    socket.emit('handleAnswer',{userid,answer,roomid})
   }
   
   const handleAnswerNo = () =>{
-    const socketid = socket.id
+    const userid = localStorage.getItem('userid')
     const answer = 0
-    socket.emit('handleAnswer',{socketid,answer,roomid})
+    socket.emit('handleAnswer',{userid,answer,roomid})
     
   }
 
@@ -191,7 +191,7 @@ const GameSession: React.FC<GameSessionProps>  = ({ gameid,roomid }) => {
             <GameInstruction gameid={gameid} />
           </div>
           <div className='flex justify-center self-center'>
-          {host ?
+          {localStorage.getItem('isHost') === 'true' ?
           
           <RetroButton
             color='red'
