@@ -10,7 +10,11 @@ import React, { useEffect, useState } from 'react'
 import copy from 'clipboard-copy';
 import LobbySession from '../../lobbysession/page';
 
-export default function Lobby ({ roomid }: { roomid: string }) {
+interface LobbyProps {
+  roomid: string;
+}
+
+const Lobby: React.FC<LobbyProps> = ({ roomid }) => {
     const {socket} = useSocket();
 
     const { userlist, setUserlist, setHost, host } = useUsername();
@@ -112,3 +116,5 @@ export default function Lobby ({ roomid }: { roomid: string }) {
     </>)
   )
 }
+
+export default Lobby;
