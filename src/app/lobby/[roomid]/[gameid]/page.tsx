@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useState } from 'react';
 import GameSession from '@/app/components/GameSession';
 import gamesData from '../../../data/game.json';
