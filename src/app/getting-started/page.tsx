@@ -2,17 +2,18 @@
 
 import React, { useEffect, useState } from 'react'
 import { useUsername } from '../../contexts/UsernameContext';
-import { useRouter } from 'next/navigation';
 import { useSocket } from '@/contexts/SocketContext';
 import RetroButton from '../components/button';
+import Lobby from '../lobby/[roomid]/page';
 
 
 export default function GettingStarted() {
-  const router = useRouter();
   const {socket} = useSocket();
 
   const { username } = useUsername();
-  const [roomIDInput, setRoomIDInput] = useState<string | null>(null);
+  const [roomIDInput, setRoomIDInput] = useState<string>('');
+
+  const [showLobby, setShowLobby] = useState(false);
   
     const handleRoom = (roomId: string | null) => {
       socket.emit('joinRoom', roomId);
@@ -32,7 +33,9 @@ export default function GettingStarted() {
 
     useEffect(() => {
       const handleRoomID = (data: any) => {
-        router.push(`/lobby/${data}`);
+        setRoomIDInput(data)
+        
+        // <Lobby roomid={data} />
       };
   
       socket.on('roomID', handleRoomID);
@@ -40,10 +43,20 @@ export default function GettingStarted() {
       return () => {
         socket.off('roomID', handleRoomID);
       };
-    }, [socket, router]);
+    }, [socket]);
+
+    useEffect(() => {
+      if (roomIDInput) {
+        setShowLobby(true);
+      }
+    }, [roomIDInput]);
 
   return (
     <div>
+      {showLobby ? (
+        <Lobby roomid={roomIDInput} />
+      ) :
+      <>
       <div className='mb-2'>
         <h2 className='text-xl'>Hi, {username} <br /> You may:</h2>
       </div>
@@ -75,8 +88,10 @@ export default function GettingStarted() {
             onChange={(e)=>{ setRoomIDInput(e.target.value) }} />
           <RetroButton color='red' context='Join' onClick={joinExistingRoom} />
         </div>
+        
       </div>
-
+      </>
+    }
     </div>
   )
 }

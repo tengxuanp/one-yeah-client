@@ -1,8 +1,8 @@
 import React from 'react'
 import gamesData from '../data/game.json'
 
-const GameInstruction = ( { gameid }: { gameid: string } ) => {
-    const game = gamesData.find(game => game.id.toString() === gameid);
+const GameInstruction = ( { gameid }: { gameid: number } ) => {
+    const game = gamesData.find(game => game.id === gameid);
 
 
   return (

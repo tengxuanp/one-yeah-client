@@ -6,18 +6,17 @@ import UserList from '@/app/components/UserList'
 import RetroButton from '@/app/components/button';
 import { useSocket } from '@/contexts/SocketContext';
 import { useUsername } from '@/contexts/UsernameContext';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import copy from 'clipboard-copy';
+import LobbySession from './[gameid]/page';
 
-export default function Lobby ({ params }: { params: { roomid: string } }) {
+export default function Lobby ({ roomid }: { roomid: string }) {
     const {socket} = useSocket();
-    const router = useRouter();
-    const {roomid} = params
 
     const { userlist, setUserlist, setHost, host } = useUsername();
     const [selectedGame, setSelectedGame] = useState(1);
     const [copiedMessageVisible, setCopiedMessageVisible] = useState(false);
+    const [showLobbySession,setShowLobbySession] = useState(false)
 
     const handleCopyClick = () => {
       copy(roomid);
@@ -35,9 +34,10 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
         console.log('Received userlist:', data);
         setUserlist(data);
 
-        // Emit 'usersRoomRequest' when the component mounts
-        socket.emit('usersRoomRequest', roomid);
+
       };
+      // Emit 'usersRoomRequest' when the component mounts
+      socket.emit('usersRoomRequest', roomid);
 
       // Add the event listener for 'usersRoomReceive'
       socket.on('usersRoomReceive', handleReceive);
@@ -46,7 +46,7 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
       return () => {
         socket.off('usersRoomReceive', handleReceive);
       };
-    }, [socket, roomid]); // Ensure that 'socket' and 'roomid' are stable dependencies
+    }, [socket]); // Ensure that 'socket' and 'roomid' are stable dependencies
 
   useEffect(()=>{
     const handleHost = (data:any) => {
@@ -74,7 +74,9 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
 
   useEffect(() => {
     const handleGameStarted = (gameid:any) => {
-      router.push(`/lobby/${roomid}/${gameid}`)
+      // router.push(`/lobby/${roomid}/${gameid}`)
+      setSelectedGame(gameid)
+      setShowLobbySession(true);
     };
     
     socket.on("game_initiated", handleGameStarted);
@@ -85,6 +87,7 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
   }, [socket]);
 
   return (
+    showLobbySession ? (<LobbySession roomid={roomid} gameid={selectedGame} />):(
     <>
     <div className='flex justify-center items-center'>
       <p>Invitation code: </p>
@@ -106,6 +109,6 @@ export default function Lobby ({ params }: { params: { roomid: string } }) {
       </div>
       {host? <RetroButton color='red' context='Start game' onClick={handleStartGame} />:''}
     </div>
-    </>
+    </>)
   )
 }

@@ -7,7 +7,7 @@ import GameInstruction from './GameInstruction';
 import GameOver from './GameOver';
 import RetroButton from './button';
 interface GameSessionProps {
-  gameid: string;
+  gameid: number;
   roomid: string;
 }
 
