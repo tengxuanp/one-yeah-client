@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useUsername } from '../../contexts/UsernameContext';
 import { useSocket } from '@/contexts/SocketContext';
 import RetroButton from '../components/button';
-import Lobby from '../lobby/[roomid]/page';
+import Lobby from '../lobby/page';
 
 
 export default function GettingStarted() {
