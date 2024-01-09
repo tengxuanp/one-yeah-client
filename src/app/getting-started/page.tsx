@@ -12,6 +12,7 @@ export default function GettingStarted() {
 
   const { username } = useUsername();
   const [roomIDInput, setRoomIDInput] = useState<string>('');
+  const [roomID, setRoomID] = useState<string>('');
 
   const [showLobby, setShowLobby] = useState(false);
   
@@ -34,8 +35,7 @@ export default function GettingStarted() {
     useEffect(() => {
       const handleRoomID = (data: any) => {
         setRoomIDInput(data)
-        
-        // <Lobby roomid={data} />
+        setRoomID(data)
       };
   
       socket.on('roomID', handleRoomID);
@@ -46,10 +46,10 @@ export default function GettingStarted() {
     }, [socket]);
 
     useEffect(() => {
-      if (roomIDInput) {
+      if (roomID) {
         setShowLobby(true);
       }
-    }, [roomIDInput]);
+    }, [roomID]);
 
   return (
     <div>
