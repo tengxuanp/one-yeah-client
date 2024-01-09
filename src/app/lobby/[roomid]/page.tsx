@@ -8,7 +8,7 @@ import { useSocket } from '@/contexts/SocketContext';
 import { useUsername } from '@/contexts/UsernameContext';
 import React, { useEffect, useState } from 'react'
 import copy from 'clipboard-copy';
-import LobbySession from './[gameid]/page';
+import LobbySession from '../../lobbysession/page';
 
 export default function Lobby ({ roomid }: { roomid: string }) {
     const {socket} = useSocket();

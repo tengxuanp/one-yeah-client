@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import GameSession from '@/app/components/GameSession';
-import gamesData from '../../../data/game.json';
+import gamesData from '../data/game.json';
 
 interface GameData {
   id: number;
