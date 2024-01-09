@@ -14,7 +14,7 @@ interface LobbyProps {
   roomid: string;
 }
 
-const Lobby: React.FC<LobbyProps> = ({ roomid }) => {
+export default function Lobby ({ roomid }:LobbyProps) {
     const {socket} = useSocket();
 
     const { userlist, setUserlist, setHost, host } = useUsername();
@@ -116,5 +116,3 @@ const Lobby: React.FC<LobbyProps> = ({ roomid }) => {
     </>)
   )
 }
-
-export default Lobby;
