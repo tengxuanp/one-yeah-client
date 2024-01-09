@@ -8,7 +8,7 @@ import { useSocket } from '@/contexts/SocketContext';
 import { useUsername } from '@/contexts/UsernameContext';
 import React, { useEffect, useState } from 'react'
 import copy from 'clipboard-copy';
-import LobbySession from '../lobbysession/page';
+import LobbySession from './LobbySession';
 
 interface LobbyProps {
   roomid: string;
